@@ -69,7 +69,7 @@ const EnhancedTableToolbar = props => {
       </Typography>
       <Box component="div">
         <TextField
-          label="Поиск по коду"
+          label="Поиск по коду заказа"
           style={{ width: "200px" }}
           value={searchValue}
           onChange={e => setSearchValue(e.target.value)}

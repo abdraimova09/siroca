@@ -16,7 +16,7 @@ const OrdersContextProvider = ({ children }) => {
 
   async function getOrders() {
     try {
-      let response = await axios(
+      const response = await axios(
         `${BASE_URL}/orders/researches-with-prices${window.location.search}`
       );
       dispatch({
