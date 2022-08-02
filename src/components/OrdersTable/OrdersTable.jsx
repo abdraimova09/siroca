@@ -14,10 +14,10 @@ import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Switch from "@mui/material/Switch";
-import { useOrdersContext } from "../../context/ordersContext";
 import Loader from "../Loader/Loader";
 import { useSearchParams } from "react-router-dom";
 import { Button, TextField } from "@mui/material";
+import { useOrdersContext } from "../../helpers/hooks";
 
 function EnhancedTableHead(props) {
   const { sortByName, setSortByName } = props;
@@ -84,10 +84,14 @@ export default function OrdersTable() {
     useOrdersContext();
   const [searchParams, setSearchParams] = useSearchParams();
   const [page, setPage] = React.useState(0);
-  const [searchValue, setSearchValue] = React.useState("");
+  const [searchValue, setSearchValue] = React.useState(
+    searchParams.get("code") ? searchParams.get("code") : ""
+  );
   const [sortByName, setSortByName] = React.useState("asc");
   const [dense, setDense] = React.useState(false);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [rowsPerPage, setRowsPerPage] = React.useState(
+    searchParams.get("size") ? +searchParams.get("size") : 5
+  );
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -101,6 +105,14 @@ export default function OrdersTable() {
   const handleChangeDense = event => {
     setDense(event.target.checked);
   };
+  React.useEffect(() => {
+    setSearchParams({
+      page: page,
+      size: rowsPerPage,
+      "sort[0].key": "name",
+      "sort[0].value": sortByName,
+    });
+  }, []);
 
   React.useEffect(() => {
     if (searchValue) {
@@ -118,7 +130,7 @@ export default function OrdersTable() {
   React.useEffect(() => {
     getOrders();
   }, [searchParams]);
-  if (ordersLoading) return <Loader />;
+  if (ordersLoading && !searchValue && !ordersError && !page) return <Loader />;
   if (ordersError)
     return (
       <Box marginTop={"50px"}>
@@ -178,6 +190,7 @@ export default function OrdersTable() {
             setRowsPerPage(5);
             setPage(0);
             setSortByName("asc");
+            setSearchValue("");
           }}
           variant="outlined">
           Сбросить фильтры
